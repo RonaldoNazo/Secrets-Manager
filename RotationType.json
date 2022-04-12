@@ -1,0 +1,13 @@
+{
+"mariadb": "MariaDBSingleUser",
+"mysql": "MySQLSingleUser",
+"oracle-ee": "OracleSingleUser",
+"oracle-ee-cdb":"OracleSingleUser",
+"oracle-se2":"OracleSingleUser",
+"oracle-se2-cdb":"OracleSingleUser",
+"postgres": "PostgreSQLSingleUser",
+"sqlserver-ee": "SQLServerSingleUser",
+"sqlserver-se": "SQLServerSingleUser",
+"sqlserver-ex": "SQLServerSingleUser",
+"sqlserver-web": "SQLServerSingleUser"
+}

@@ -1,0 +1,89 @@
+{
+   "AWSTemplateFormatVersion":"2010-09-09",
+   "Transform":"AWS::SecretsManager-2020-07-23",
+  "Parameters" : {
+
+      "MyDBInstance" : {
+      "Description" : " RDS instance ID",
+      "Type": "String"
+    },
+    "SecretString" : {
+      "Description" : "Secret STring ",
+      "Type": "String"
+    },
+    "RdsSubnetGroup" : {
+       "Description" : "RDS Subnet Group id",
+       "Type" : "CommaDelimitedList"
+    },
+    "PrivateSubnet1" : {
+      "Description" : " Rds private Subnet 1 ",
+      "Type": "String"
+    },
+    "PrivateSubnet2" : {
+      "Description" : " RDS private Subnet 1",
+      "Type": "String"
+    },
+    "LambdaSecGroup" : {
+      "Description" : " lambda rotator security group",
+      "Type": "String"
+    }
+  },
+   "Resources":{
+      "MyRDSInstanceRotationSecret":{
+         "Type":"AWS::SecretsManager::Secret",
+         "Properties":{
+            "SecretString": {"Ref" : "SecretString"},
+            "Tags":[
+               {
+                  "Key":"AppName",
+                  "Value":"MyApp"
+               }
+            ]
+         }
+      },
+      "SecretRDSInstanceAttachment": {
+         "Type":"AWS::SecretsManager::SecretTargetAttachment",
+         "DependsOn" : "MyRDSInstanceRotationSecret",
+         "Properties":{
+            "SecretId":{
+               "Ref":"MyRDSInstanceRotationSecret"
+            },
+            "TargetId":{
+               "Ref":"MyDBInstance"
+            },
+            "TargetType":"AWS::RDS::DBInstance"
+         }
+      },
+      "MySecretRotationSchedule":{
+         "Type":"AWS::SecretsManager::RotationSchedule",
+         "DependsOn": "SecretRDSInstanceAttachment",
+         "Properties":{
+            "SecretId":{
+               "Ref":"MyRDSInstanceRotationSecret"
+            },
+            "HostedRotationLambda":{
+               "RotationType":"MySQLSingleUser",
+               "RotationLambdaName":"SecretsManagerRotation",
+               "VpcSubnetIds":{
+                  "Fn::Join":[
+                     ",",
+                     [
+                        {
+                           "Ref":"PrivateSubnet1"
+                        },
+                        {
+                           "Ref":"PrivateSubnet2"
+                        }
+                     ]
+                  ]
+               },
+               "VpcSecurityGroupIds":{"Ref" : "LambdaSecGroup"}
+            },
+            "RotationRules":{
+              "Duration": "6h",
+              "ScheduleExpression": "rate(10 days)"
+            }
+         }
+      }
+   }
+}

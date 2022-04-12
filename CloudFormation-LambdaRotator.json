@@ -1,0 +1,54 @@
+{
+    "AWSTemplateFormatVersion":"2010-09-09",
+    "Transform":"AWS::SecretsManager-2020-07-23",
+    "Parameters" : {
+        "SecretString" : {
+            "Type" : "String"
+        }
+    },
+    "Resources":{
+    "MyRDSInstanceRotationSecret":{
+        "Type":"AWS::SecretsManager::Secret",
+        "Properties":{
+            "SecretString": {"Ref" : "SecretString"},
+            "Tags":[
+                {
+                "Key":"Created-By",
+                "Value":"Terraform"
+                }
+            ]
+        }
+    },
+    "SecretRDSInstanceAttachment": {
+        "Type":"AWS::SecretsManager::SecretTargetAttachment",
+        "DependsOn" : "MyRDSInstanceRotationSecret",
+        "Properties":{
+            "SecretId":{
+                "Ref":"MyRDSInstanceRotationSecret"
+            },
+            "TargetId":"${MyDBInstance}",
+            "TargetType":"AWS::RDS::DBInstance"
+        }
+    },
+    "MySecretRotationSchedule":{
+        "Type":"AWS::SecretsManager::RotationSchedule",
+        "DependsOn": "SecretRDSInstanceAttachment",
+        "Properties":{
+            "SecretId":{
+                "Ref":"MyRDSInstanceRotationSecret"
+            },
+            "HostedRotationLambda":{
+                "RotationLambdaName": "${RotationLambdaName}",
+                "VpcSubnetIds": {"Fn::Join" : [ ",", [ "${RDS_Subne_1_id}", "${RDS_Subne_2_id}" ] ]},
+                "VpcSecurityGroupIds": "${LambdaSecGroup}",
+                "RotationType": "${RotationType}"
+            },
+            "RotationRules":{
+            "Duration": "6h",
+            "ScheduleExpression": "rate(10 days)"
+            }
+        }
+    }
+}
+}
+
