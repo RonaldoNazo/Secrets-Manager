@@ -1,4 +1,5 @@
-Created by Ronaldo Nazo :D
+# Secrets Manager Terraform
+### Created by Ronaldo Nazo :D
 This Repo is used to create Secrets Manager on AWS using Terraform scripting!
 
 This is a script on terraform used for :
@@ -8,8 +9,8 @@ This script is dynamic ,so it will suit with every kind of RDS
 
 It creates Security groups for VPC endpoint for SM .
 
-##USAGE
-
+## USAGE
+```hcl
 module "Secret_Manager" {
   source                = "github.com/RonaldoNazo/Secrets-Manager"
   RDS_Username          = var.RDS_Username
@@ -23,3 +24,4 @@ module "Secret_Manager" {
   engine                = var.engine
   name_prefix           = local.name
 }
+```
