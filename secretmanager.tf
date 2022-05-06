@@ -60,7 +60,7 @@ resource "aws_cloudformation_stack" "secret_manager_rotator" {
   parameters = {
     SecretString = "${local.SecretString}"
   }
-  iam_role_arn = "arn:aws:iam::127148579316:role/cloudformationrole"
+  iam_role_arn = try(var.cloudformation_role_arn,null)
   capabilities = ["CAPABILITY_IAM", "CAPABILITY_NAMED_IAM", "CAPABILITY_AUTO_EXPAND"]
   template_url = "https://${aws_s3_bucket.CF_script.id}.s3.amazonaws.com/CF-script.json"
 }

@@ -47,3 +47,6 @@ variable "common_tags" {
     Created_from = "Terraform"
   }
 }
+variable "cloudformation_role_arn" { #if not given , the role that the user has will be used instead!
+  description = "Role of CloudFormation that is going to create Secret and Lambda Rotator!"
+}
