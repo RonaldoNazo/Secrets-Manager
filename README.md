@@ -12,7 +12,7 @@ It creates Security groups for VPC endpoint for SM .
 ## USAGE
 ```hcl
 module "Secret_Manager" {
-  source                = "github.com/RonaldoNazo/Secrets-Manager"
+  source                = "github.com/RonaldoNazo/terraform-aws-secretsmanager"
   RDS_Username          = var.RDS_Username
   RDS_Password          = var.RDS_Password
   RDS_instance_id       = var.RDS_instance_id
